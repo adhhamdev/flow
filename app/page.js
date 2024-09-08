@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import FloatingControls from './components/FloatingControls';
 import MusicLibrary from './components/MusicLibrary';
 import NowPlaying from './components/NowPlaying';
@@ -9,6 +9,8 @@ export default function Home() {
   const [audioFiles, setAudioFiles] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [view, setView] = useState('library');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   const handleFileSelect = useCallback(async () => {
     try {
@@ -16,7 +18,7 @@ export default function Home() {
       if (window.showDirectoryPicker) {
         const dirHandle = await window.showDirectoryPicker();
         for await (const entry of dirHandle.values()) {
-          if (entry.kind === 'file' && entry.name.endsWith('.mp3')) {
+          if (entry.kind === 'file' && entry.name.match(/\.(mp3|wav|ogg)$/i)) {
             const file = await entry.getFile();
             files.push({
               name: file.name,
@@ -29,6 +31,7 @@ export default function Home() {
         const inputEl = document.createElement('input');
         inputEl.type = 'file';
         inputEl.multiple = true;
+        inputEl.accept = 'audio/*';
         inputEl.click();
         inputEl.onchange = (ev) => {
           for (const entry of ev.target.files) {
@@ -47,25 +50,80 @@ export default function Home() {
     }
   }, []);
 
+  const handleTrackSelect = useCallback((track) => {
+    setCurrentTrack(track);
+    setIsPlaying(true);
+  }, []);
+
+  const handlePlayPause = useCallback(() => {
+    setIsPlaying((prev) => !prev);
+  }, []);
+
+  const handleNextTrack = useCallback(() => {
+    const currentIndex = audioFiles.findIndex(
+      (file) => file.name === currentTrack.name
+    );
+    const nextIndex = (currentIndex + 1) % audioFiles.length;
+    setCurrentTrack(audioFiles[nextIndex]);
+    setIsPlaying(true);
+  }, [audioFiles, currentTrack]);
+
+  const handlePrevTrack = useCallback(() => {
+    const currentIndex = audioFiles.findIndex(
+      (file) => file.name === currentTrack.name
+    );
+    const prevIndex =
+      (currentIndex - 1 + audioFiles.length) % audioFiles.length;
+    setCurrentTrack(audioFiles[prevIndex]);
+    setIsPlaying(true);
+  }, [audioFiles, currentTrack]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, currentTrack]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener('ended', handleNextTrack);
+      return () => {
+        audioRef.current.removeEventListener('ended', handleNextTrack);
+      };
+    }
+  }, [handleNextTrack]);
+
   return (
     <main className='flex flex-col h-screen bg-gradient-to-b from-blue-100 to-purple-100'>
       <div className='flex-grow overflow-y-auto'>
         {view === 'library' ? (
           <MusicLibrary
             audioFiles={audioFiles}
-            onTrackSelect={setCurrentTrack}
+            onTrackSelect={handleTrackSelect}
             onFileSelect={handleFileSelect}
+            currentTrack={currentTrack}
           />
         ) : (
           <NowPlaying track={currentTrack} />
         )}
       </div>
       {currentTrack && (
-        <FloatingControls
-          track={currentTrack}
-          onViewChange={setView}
-          currentView={view}
-        />
+        <>
+          <audio ref={audioRef} src={currentTrack.url} />
+          <FloatingControls
+            track={currentTrack}
+            onViewChange={setView}
+            currentView={view}
+            isPlaying={isPlaying}
+            onPlayPause={handlePlayPause}
+            onNextTrack={handleNextTrack}
+            onPrevTrack={handlePrevTrack}
+          />
+        </>
       )}
     </main>
   );
