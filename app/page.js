@@ -8,22 +8,39 @@ import NowPlaying from './components/NowPlaying';
 export default function Home() {
   const [audioFiles, setAudioFiles] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [view, setView] = useState('library'); // 'library' or 'nowPlaying'
+  const [view, setView] = useState('library');
 
   const handleFileSelect = useCallback(async () => {
     try {
-      const dirHandle = await window.showDirectoryPicker();
       const files = [];
-      for await (const entry of dirHandle.values()) {
-        if (entry.kind === 'file' && entry.name.endsWith('.mp3')) {
-          const file = await entry.getFile();
-          files.push({
-            name: file.name,
-            url: URL.createObjectURL(file),
-          });
+      if (window.showDirectoryPicker) {
+        const dirHandle = await window.showDirectoryPicker();
+        for await (const entry of dirHandle.values()) {
+          if (entry.kind === 'file' && entry.name.endsWith('.mp3')) {
+            const file = await entry.getFile();
+            files.push({
+              name: file.name,
+              url: URL.createObjectURL(file),
+            });
+          }
         }
+        setAudioFiles(files);
+      } else {
+        const inputEl = document.createElement('input');
+        inputEl.type = 'file';
+        inputEl.multiple = true;
+        inputEl.click();
+        inputEl.onchange = (ev) => {
+          for (const entry of ev.target.files) {
+            const file = entry;
+            files.push({
+              name: file.name,
+              url: URL.createObjectURL(file),
+            });
+          }
+          setAudioFiles(files);
+        };
       }
-      setAudioFiles(files);
     } catch (error) {
       console.error('Error selecting directory:', error);
       throw new Error('Failed to select directory. Please try again.');

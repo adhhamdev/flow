@@ -25,11 +25,11 @@
 }
 
 .floating-controls {
-  @apply fixed p-4 transition-transform duration-300 ease-in-out transform bg-white rounded-lg shadow-md bottom-4 right-4 hover:scale-105;
+  @apply fixed bottom-0 left-0 right-0 transition-transform duration-300 ease-in-out transform bg-white shadow-md;
 }
 
 .track-list {
-  @apply space-y-2 overflow-y-auto max-h-80;
+  @apply space-y-2 overflow-y-auto max-h-[calc(100vh-16rem)];
 }
 
 .track-item {
@@ -37,7 +37,7 @@
 }
 
 .music-player {
-  @apply p-6 mt-8 bg-white rounded-lg shadow-md;
+  @apply p-4 mt-4 bg-white rounded-lg shadow-md sm:p-6 sm:mt-8;
 }
 
 .player-controls {
@@ -45,5 +45,15 @@
 }
 
 .time-display {
-  @apply text-sm font-medium text-gray-600;
+  @apply text-xs font-medium text-gray-600 sm:text-sm;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+@media (max-width: 640px) {
+  .track-list {
+    max-height: calc(100vh - 12rem);
+  }
 }

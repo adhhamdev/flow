@@ -91,18 +91,18 @@ const FloatingControls = ({ track, onViewChange, currentView }) => {
   };
 
   return (
-    <div className='fixed bottom-0 left-0 right-0 bg-white shadow-lg'>
-      <audio ref={audioRef} />
-      <div className='flex items-center justify-between p-2'>
-        <div className='flex items-center flex-grow'>
-          <div className='flex items-center justify-center w-12 h-12 mr-3 bg-purple-100 rounded-full'>
+    <div className='fixed bottom-0 left-0 right-0 p-4 bg-white shadow-lg sm:p-6'>
+      <audio ref={audioRef} className='hidden' />
+      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+        <div className='flex items-center mb-4 sm:mb-0'>
+          <div className='flex items-center justify-center w-12 h-12 mr-4 bg-purple-100 rounded-full'>
             <FiMusic className='text-purple-600' size={24} />
           </div>
-          <div className='flex-grow mr-2'>
-            <h4 className='font-semibold text-purple-800 truncate'>
+          <div className='flex-grow'>
+            <h4 className='text-base font-semibold text-purple-800 truncate'>
               {track.name}
             </h4>
-            <div className='flex items-center'>
+            <div className='flex items-center mt-1'>
               <span className='mr-2 text-xs text-gray-500'>
                 {formatTime(currentTime)}
               </span>
@@ -117,39 +117,39 @@ const FloatingControls = ({ track, onViewChange, currentView }) => {
             </div>
           </div>
         </div>
-        <div className='flex items-center'>
+        <div className='flex items-center justify-center'>
           <button
             onClick={skipBackward}
-            className='p-2 text-purple-800 rounded-full hover:bg-purple-100'>
-            <FiSkipBack size={20} />
+            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
+            <FiSkipBack size={28} />
           </button>
           <button
             onClick={togglePlay}
-            className='p-3 mx-2 text-white bg-purple-600 rounded-full hover:bg-purple-700'>
-            {isPlaying ? <FiPause size={24} /> : <FiPlay size={24} />}
+            className='p-4 mx-3 text-white bg-purple-600 rounded-full hover:bg-purple-700'>
+            {isPlaying ? <FiPause size={32} /> : <FiPlay size={32} />}
           </button>
           <button
             onClick={skipForward}
-            className='p-2 text-purple-800 rounded-full hover:bg-purple-100'>
-            <FiSkipForward size={20} />
+            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
+            <FiSkipForward size={28} />
           </button>
         </div>
       </div>
-      <div className='flex items-center justify-between p-2 bg-purple-50'>
+      <div className='flex items-center justify-between mt-4'>
         <button
           onClick={toggleView}
           className='text-purple-800 hover:text-purple-600'>
           {currentView === 'library' ? (
-            <FiChevronUp size={24} />
+            <FiChevronUp size={28} />
           ) : (
-            <FiList size={24} />
+            <FiList size={28} />
           )}
         </button>
         <div className='flex items-center'>
           <button
             onClick={toggleMute}
-            className='p-2 text-purple-800 rounded-full hover:bg-purple-100'>
-            {isMuted ? <FiVolumeX size={20} /> : <FiVolume2 size={20} />}
+            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
+            {isMuted ? <FiVolumeX size={28} /> : <FiVolume2 size={28} />}
           </button>
           <input
             type='range'
@@ -158,7 +158,7 @@ const FloatingControls = ({ track, onViewChange, currentView }) => {
             step='0.01'
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className='w-20 input-range'
+            className='w-24 ml-2'
           />
         </div>
       </div>
