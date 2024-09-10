@@ -10,6 +10,10 @@ export default function Home() {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [view, setView] = useState('library');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isRepeatOn, setIsRepeatOn] = useState(false);
+  const [isShuffleOn, setIsShuffleOn] = useState(false);
   const audioRef = useRef(null);
 
   const handleFileSelect = useCallback(async () => {
@@ -53,6 +57,7 @@ export default function Home() {
   const handleTrackSelect = useCallback((track) => {
     setCurrentTrack(track);
     setIsPlaying(true);
+    setCurrentTime(0);
   }, []);
 
   const handlePlayPause = useCallback(() => {
@@ -60,23 +65,50 @@ export default function Home() {
   }, []);
 
   const handleNextTrack = useCallback(() => {
-    const currentIndex = audioFiles.findIndex(
-      (file) => file.name === currentTrack.name
-    );
-    const nextIndex = (currentIndex + 1) % audioFiles.length;
-    setCurrentTrack(audioFiles[nextIndex]);
+    if (isShuffleOn) {
+      const randomIndex = Math.floor(Math.random() * audioFiles.length);
+      setCurrentTrack(audioFiles[randomIndex]);
+    } else {
+      const currentIndex = audioFiles.findIndex(
+        (file) => file.name === currentTrack.name
+      );
+      const nextIndex = (currentIndex + 1) % audioFiles.length;
+      setCurrentTrack(audioFiles[nextIndex]);
+    }
     setIsPlaying(true);
-  }, [audioFiles, currentTrack]);
+    setCurrentTime(0);
+  }, [audioFiles, currentTrack, isShuffleOn]);
 
   const handlePrevTrack = useCallback(() => {
-    const currentIndex = audioFiles.findIndex(
-      (file) => file.name === currentTrack.name
-    );
-    const prevIndex =
-      (currentIndex - 1 + audioFiles.length) % audioFiles.length;
-    setCurrentTrack(audioFiles[prevIndex]);
+    if (isShuffleOn) {
+      const randomIndex = Math.floor(Math.random() * audioFiles.length);
+      setCurrentTrack(audioFiles[randomIndex]);
+    } else {
+      const currentIndex = audioFiles.findIndex(
+        (file) => file.name === currentTrack.name
+      );
+      const prevIndex =
+        (currentIndex - 1 + audioFiles.length) % audioFiles.length;
+      setCurrentTrack(audioFiles[prevIndex]);
+    }
     setIsPlaying(true);
-  }, [audioFiles, currentTrack]);
+    setCurrentTime(0);
+  }, [audioFiles, currentTrack, isShuffleOn]);
+
+  const handleSeek = useCallback((time) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  }, []);
+
+  const handleToggleRepeat = useCallback(() => {
+    setIsRepeatOn((prev) => !prev);
+  }, []);
+
+  const handleToggleShuffle = useCallback(() => {
+    setIsShuffleOn((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -90,12 +122,39 @@ export default function Home() {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.addEventListener('ended', handleNextTrack);
+      const handleTimeUpdate = () => {
+        setCurrentTime(audioRef.current.currentTime);
+      };
+
+      const handleLoadedMetadata = () => {
+        setDuration(audioRef.current.duration);
+      };
+
+      const handleEnded = () => {
+        if (isRepeatOn) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        } else {
+          handleNextTrack();
+        }
+      };
+
+      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audioRef.current.addEventListener('ended', handleEnded);
+
       return () => {
-        audioRef.current.removeEventListener('ended', handleNextTrack);
+        if (audioRef.current) {
+          audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+          audioRef.current.removeEventListener(
+            'loadedmetadata',
+            handleLoadedMetadata
+          );
+          audioRef.current.removeEventListener('ended', handleEnded);
+        }
       };
     }
-  }, [handleNextTrack]);
+  }, [handleNextTrack, isRepeatOn]);
 
   return (
     <main className='flex flex-col h-screen bg-gradient-to-b from-blue-100 to-purple-100'>
@@ -122,6 +181,13 @@ export default function Home() {
             onPlayPause={handlePlayPause}
             onNextTrack={handleNextTrack}
             onPrevTrack={handlePrevTrack}
+            onSeek={handleSeek}
+            duration={duration}
+            currentTime={currentTime}
+            onToggleRepeat={handleToggleRepeat}
+            onToggleShuffle={handleToggleShuffle}
+            isRepeatOn={isRepeatOn}
+            isShuffleOn={isShuffleOn}
           />
         </>
       )}
