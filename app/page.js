@@ -15,6 +15,14 @@ export default function Home() {
   const [isRepeatOn, setIsRepeatOn] = useState(false);
   const [isShuffleOn, setIsShuffleOn] = useState(false);
   const audioRef = useRef(null);
+  const [volume, setVolume] = useState(1);
+
+  const handleVolumeChange = useCallback((newVolume) => {
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
+  }, []);
 
   const handleFileSelect = useCallback(async () => {
     try {
@@ -188,6 +196,7 @@ export default function Home() {
             onToggleShuffle={handleToggleShuffle}
             isRepeatOn={isRepeatOn}
             isShuffleOn={isShuffleOn}
+            onVolumeChange={handleVolumeChange}
           />
         </>
       )}

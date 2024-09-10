@@ -31,6 +31,7 @@ const FloatingControls = ({
   onToggleShuffle,
   isRepeatOn,
   isShuffleOn,
+  onVolumeChange,
 }) => {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
@@ -41,16 +42,16 @@ const FloatingControls = ({
   }, [currentTime]);
 
   const handleVolumeChange = (newVolume) => {
-    setVolume(newVolume[0]);
-    setIsMuted(newVolume[0] === 0);
-    // You might want to propagate this change to the parent component
-    // onVolumeChange(newVolume[0]);
+    const volumeValue = newVolume[0];
+    setVolume(volumeValue);
+    setIsMuted(volumeValue === 0);
+    onVolumeChange(volumeValue);
   };
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
-    // You might want to propagate this change to the parent component
-    // onMute(!isMuted);
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    onVolumeChange(newMutedState ? 0 : volume);
   };
 
   const toggleView = () => {
