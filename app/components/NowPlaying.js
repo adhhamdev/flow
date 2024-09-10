@@ -1,4 +1,5 @@
-import { FiMusic } from 'react-icons/fi';
+import { Card, CardContent } from '@/components/ui/card';
+import { Music } from 'lucide-react';
 
 const NowPlaying = ({ track }) => {
   if (!track) {
@@ -6,16 +7,17 @@ const NowPlaying = ({ track }) => {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-full p-4 bg-gradient-to-b from-purple-100 to-blue-100'>
-      <div className='flex items-center justify-center w-48 h-48 mb-6 bg-purple-200 rounded-full sm:w-64 sm:h-64 sm:mb-8'>
-        <FiMusic className='text-purple-600' size={48} />
-      </div>
-      <h2 className='mb-2 text-xl font-bold text-center text-purple-800 sm:text-2xl'>
-        {track.name}
-      </h2>
-      <p className='text-sm text-purple-600 sm:text-base'>Now Playing</p>
-    </div>
+    <Card className='w-full max-w-md mx-auto'>
+      <CardContent className='flex flex-col items-center justify-center p-6'>
+        <div className='flex items-center justify-center w-48 h-48 mb-6 rounded-full bg-secondary sm:w-64 sm:h-64'>
+          <Music className='text-secondary-foreground' size={64} />
+        </div>
+        <h2 className='mb-2 text-2xl font-bold text-center text-foreground'>
+          {track.name}
+        </h2>
+        <p className='text-sm text-muted-foreground'>Now Playing</p>
+      </CardContent>
+    </Card>
   );
 };
-
 export default NowPlaying;

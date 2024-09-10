@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { cn } from '@/lib/utils';
 import {
   ChevronUp,
   List,
@@ -70,39 +71,56 @@ const FloatingControls = ({
   };
 
   return (
-    <Card className='fixed bottom-0 left-0 right-0 p-4 shadow-lg sm:p-6'>
+    <Card className='fixed bottom-0 left-0 right-0 p-4 shadow-lg'>
       <div className='flex flex-col'>
         <div className='flex items-center justify-between mb-2'>
-          <span className='text-sm'>{formatTime(currentTime)}</span>
+          <span className='text-xs text-muted-foreground sm:text-sm'>
+            {formatTime(currentTime)}
+          </span>
           <Slider
             min={0}
             max={duration}
             step={1}
             value={[seekValue]}
             onValueChange={handleSeek}
-            className='w-full mx-4'
+            className='w-full mx-2 sm:mx-4'
           />
-          <span className='text-sm'>{formatTime(duration)}</span>
+          <span className='text-xs text-muted-foreground sm:text-sm'>
+            {formatTime(duration)}
+          </span>
         </div>
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center mb-4 sm:mb-0'>
-            <div className='flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-primary/10'>
-              <Music className='text-primary' size={24} />
+
+        <div className='flex items-center justify-between mb-2'>
+          <div className='flex items-center flex-1 mr-2'>
+            <div className='flex items-center justify-center w-10 h-10 mr-3 rounded-full bg-secondary sm:w-12 sm:h-12'>
+              <Music className='text-secondary-foreground' size={20} />
             </div>
-            <div className='flex-grow'>
-              <h4 className='text-base font-semibold truncate text-primary'>
+            <div className='flex-grow max-w-[150px] sm:max-w-none'>
+              <h4 className='text-sm font-semibold truncate text-foreground sm:text-base'>
                 {track.name}
               </h4>
             </div>
           </div>
-          <div className='flex items-center justify-center'>
-            <Button variant='ghost' size='icon' onClick={onToggleShuffle}>
+
+          <div className='flex items-center justify-end flex-1'>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onToggleShuffle}
+              className='hidden sm:inline-flex'>
               <Shuffle
                 size={20}
-                className={isShuffleOn ? 'text-primary' : ''}
+                className={cn(
+                  isShuffleOn ? 'text-primary' : 'text-muted-foreground'
+                )}
               />
             </Button>
-            <Button variant='ghost' size='icon' onClick={onPrevTrack}>
+
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onPrevTrack}
+              className='mx-1'>
               <SkipBack size={24} />
             </Button>
             <Button
@@ -112,15 +130,31 @@ const FloatingControls = ({
               onClick={onPlayPause}>
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </Button>
-            <Button variant='ghost' size='icon' onClick={onNextTrack}>
+
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onNextTrack}
+              className='mx-1'>
               <SkipForward size={24} />
             </Button>
-            <Button variant='ghost' size='icon' onClick={onToggleRepeat}>
-              <Repeat size={20} className={isRepeatOn ? 'text-primary' : ''} />
+
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onToggleRepeat}
+              className='hidden sm:inline-flex'>
+              <Repeat
+                size={20}
+                className={cn(
+                  isRepeatOn ? 'text-primary' : 'text-muted-foreground'
+                )}
+              />
             </Button>
           </div>
         </div>
-        <div className='flex items-center justify-between mt-4'>
+
+        <div className='flex items-center justify-between'>
           <Button variant='ghost' size='icon' onClick={toggleView}>
             {currentView === 'library' ? (
               <ChevronUp size={24} />
@@ -138,7 +172,7 @@ const FloatingControls = ({
               step={0.01}
               value={[isMuted ? 0 : volume]}
               onValueChange={handleVolumeChange}
-              className='w-24 ml-2'
+              className='w-20 ml-2 sm:w-28'
             />
           </div>
         </div>
@@ -146,5 +180,4 @@ const FloatingControls = ({
     </Card>
   );
 };
-
 export default FloatingControls;
