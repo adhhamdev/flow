@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import {
-  FiChevronUp,
-  FiList,
-  FiMusic,
-  FiPause,
-  FiPlay,
-  FiSkipBack,
-  FiSkipForward,
-  FiVolume2,
-  FiVolumeX,
-} from 'react-icons/fi';
+  ChevronUp,
+  List,
+  Music,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import { useState } from 'react';
 
 const FloatingControls = ({
   track,
@@ -23,12 +26,11 @@ const FloatingControls = ({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
 
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
+  const handleVolumeChange = (newVolume) => {
+    setVolume(newVolume[0]);
+    setIsMuted(newVolume[0] === 0);
     // You might want to propagate this change to the parent component
-    // onVolumeChange(newVolume);
+    // onVolumeChange(newVolume[0]);
   };
 
   const toggleMute = () => {
@@ -42,64 +44,57 @@ const FloatingControls = ({
   };
 
   return (
-    <div className='fixed bottom-0 left-0 right-0 p-4 bg-white shadow-lg sm:p-6'>
+    <Card className='fixed bottom-0 left-0 right-0 p-4 shadow-lg sm:p-6'>
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
         <div className='flex items-center mb-4 sm:mb-0'>
-          <div className='flex items-center justify-center w-12 h-12 mr-4 bg-purple-100 rounded-full'>
-            <FiMusic className='text-purple-600' size={24} />
+          <div className='flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-primary/10'>
+            <Music className='text-primary' size={24} />
           </div>
           <div className='flex-grow'>
-            <h4 className='text-base font-semibold text-purple-800 truncate'>
+            <h4 className='text-base font-semibold truncate text-primary'>
               {track.name}
             </h4>
           </div>
         </div>
         <div className='flex items-center justify-center'>
-          <button
-            onClick={onPrevTrack}
-            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
-            <FiSkipBack size={28} />
-          </button>
-          <button
-            onClick={onPlayPause}
-            className='p-4 mx-3 text-white bg-purple-600 rounded-full hover:bg-purple-700'>
-            {isPlaying ? <FiPause size={32} /> : <FiPlay size={32} />}
-          </button>
-          <button
-            onClick={onNextTrack}
-            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
-            <FiSkipForward size={28} />
-          </button>
+          <Button variant='ghost' size='icon' onClick={onPrevTrack}>
+            <SkipBack size={24} />
+          </Button>
+          <Button
+            variant='default'
+            size='icon'
+            className='mx-2'
+            onClick={onPlayPause}>
+            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+          </Button>
+          <Button variant='ghost' size='icon' onClick={onNextTrack}>
+            <SkipForward size={24} />
+          </Button>
         </div>
       </div>
       <div className='flex items-center justify-between mt-4'>
-        <button
-          onClick={toggleView}
-          className='text-purple-800 hover:text-purple-600'>
+        <Button variant='ghost' size='icon' onClick={toggleView}>
           {currentView === 'library' ? (
-            <FiChevronUp size={28} />
+            <ChevronUp size={24} />
           ) : (
-            <FiList size={28} />
+            <List size={24} />
           )}
-        </button>
+        </Button>
         <div className='flex items-center'>
-          <button
-            onClick={toggleMute}
-            className='p-3 text-purple-800 rounded-full hover:bg-purple-100'>
-            {isMuted ? <FiVolumeX size={28} /> : <FiVolume2 size={28} />}
-          </button>
-          <input
-            type='range'
-            min='0'
-            max='1'
-            step='0.01'
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
+          <Button variant='ghost' size='icon' onClick={toggleMute}>
+            {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+          </Button>
+          <Slider
+            min={0}
+            max={1}
+            step={0.01}
+            value={[isMuted ? 0 : volume]}
+            onValueChange={handleVolumeChange}
             className='w-24 ml-2'
           />
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

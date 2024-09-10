@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion';
-import { FiFolder, FiMusic } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Folder, Music } from 'lucide-react';
 
 const MusicLibrary = ({
   audioFiles,
@@ -7,55 +9,44 @@ const MusicLibrary = ({
   onFileSelect,
   currentTrack,
 }) => {
+  const removeFileExtension = (filename) => {
+    return filename.replace(/\.[^/.]+$/, '');
+  };
+
   return (
-    <div className='p-4'>
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className='mb-6 text-3xl font-bold text-center text-purple-800'>
-        <FiMusic className='inline-block mr-2' />
-        Offline Music Player
-      </motion.h1>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={onFileSelect}
-        className='flex items-center justify-center w-full p-3 mb-6 text-white transition-colors bg-purple-600 rounded-lg shadow-md hover:bg-purple-700'>
-        <FiFolder className='mr-2' />
-        Select Music Directory
-      </motion.button>
-      {audioFiles.length > 0 && (
-        <div>
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className='mb-4 text-2xl font-semibold text-purple-700'>
-            Your Music
-          </motion.h2>
-          <ul className='space-y-2'>
+    <Card className='w-full max-w-md mx-auto'>
+      <CardHeader>
+        <CardTitle className='text-2xl font-bold text-center'>
+          <Music className='inline-block mr-2' />
+          Offline Music Player
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Button onClick={onFileSelect} className='w-full mb-4'>
+          <Folder className='w-4 h-4 mr-2' /> Select Music Directory
+        </Button>
+        {audioFiles.length > 0 && (
+          <ScrollArea className='h-[300px] w-full rounded-md border p-4'>
             {audioFiles.map((file, index) => (
-              <motion.li
+              <Button
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ scale: 1.02, backgroundColor: '#F3E8FF' }}
-                onClick={() => onTrackSelect(file)}
-                className={`flex items-center p-3 transition-colors bg-white rounded-lg shadow-sm cursor-pointer ${
+                variant={
                   currentTrack && currentTrack.name === file.name
-                    ? 'bg-purple-100'
-                    : ''
-                }`}>
-                <FiMusic className='mr-3 text-purple-600' />
-                <span className='text-gray-800 truncate'>{file.name}</span>
-              </motion.li>
+                    ? 'secondary'
+                    : 'ghost'
+                }
+                className='justify-start w-full mb-2'
+                onClick={() => onTrackSelect(file)}>
+                <Music className='w-4 h-4 mr-2' />
+                <span className='truncate'>
+                  {removeFileExtension(file.name)}
+                </span>
+              </Button>
             ))}
-          </ul>
-        </div>
-      )}
-    </div>
+          </ScrollArea>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
